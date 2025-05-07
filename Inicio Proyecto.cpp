@@ -6,6 +6,7 @@ const int PALO_CORAZONES = 0;
 const int PALO_DIAMANTES = 1;
 const int PALO_TREBOLES = 2;
 const int PALO_PICAS = 3;
+conts int PALO_JOKER = 4;// palo para el joker
 
 const int VALOR_2 = 12;
 const int VALOR_3 = 1;
@@ -20,14 +21,15 @@ const int VALOR_J = 9;
 const int VALOR_Q = 10;
 const int VALOR_K = 11;
 const int VALOR_A = 13;
-conts int Valor_Joker=14;
+conts int VALOR_JOKER=14;
 
-const char* palos_str[] = {"Corazones", "Diamantes", "Tréboles", "Picas"};
-const char* valores_str[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A","JO"};
+const char* palos_str[] = {"Corazones", "Diamantes", "Tréboles", "Picas","Joker"};
+conts char* valores_joker[]={"JOKER"};
+const char* valores_str[] = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A",};
 //Contar cuantos palos tengo,valores para calcular el nuemro de cartas y definir rondas
-const int NUM_PALOS = sizeof(palos_str) / sizeof(palos_str[0]);
-const int NUM_VALORES = sizeof(valores_str) / sizeof(valores_str[0]);
-const int NUM_CARTAS = NUM_PALOS * NUM_VALORES;
+const int NUM_PALOS = 5;
+const int NUM_VALORES = 14;
+const int NUM_CARTAS = 54;// 52 cartas de los palos + 2 Joker
 const int NUM_JUGADORES = 4;
 const int CARTAS_POR_JUGADOR = NUM_CARTAS / NUM_JUGADORES;
 const int NUM_RONDAS = 3;
