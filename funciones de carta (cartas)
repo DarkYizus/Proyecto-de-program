@@ -29,7 +29,7 @@ Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
         return &(actual->data);
     }
     return nullptr;
-}
+} //compila
 
 //para eliminar un nodo por índice de la lista enlazada
 
@@ -52,7 +52,7 @@ bool eliminarCartaPorIndice(Mano& mano, int indice) {
     mano.numCartas--;
     return true;
 }
-
+//compila 
 void jugarRonda(Jugador jugadores[NUM_JUGADORES]) {
     int jugadorActual = -1;
     std::vector<Carta> cartasEnMesa; // Para almacenar las cartas del jugador
@@ -86,4 +86,6 @@ void jugarRonda(Jugador jugadores[NUM_JUGADORES]) {
             indice++;
         }
         std::cout << std::endl;
+//mañama veo si compila
+
 
