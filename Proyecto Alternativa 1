@@ -1,0 +1,282 @@
+#include <iostream>
+#include <random>
+#include <algorithm> // Para std::swap
+
+// Definiciones para las cartas de póker
+enum class Palo {
+    CORAZONES, DIAMANTES, TREBOLES, PICAS, JOKER
+};
+
+enum class Valor {
+    TRES, CUATRO, CINCO, SEIS, SIETE, OCHO, NUEVE, DIEZ, JOTA, REINA, REY, AS, DOS, JOKER
+};
+
+const char* palos_str[] = {"Corazones", "Diamantes", "Tréboles", "Picas", "Joker"};
+const char* valores_str[] = {"3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A", "2", "Joker"};
+
+// Contar cuántos palos y valores tenemos
+const int NUM_PALOS_REGULARES = 4;
+const int NUM_VALORES_REGULARES = 13;
+const int NUM_JOKERS = 2;
+const int NUM_CARTAS = (NUM_PALOS_REGULARES * NUM_VALORES_REGULARES) + NUM_JOKERS; // 54 cartas en total
+const int NUM_JUGADORES = 4;
+const int CARTAS_POR_JUGADOR = NUM_CARTAS / NUM_JUGADORES;
+const int NUM_RONDAS = 3;
+
+// Estructura para representar una carta
+typedef struct {
+    Palo palo;
+    Valor valor;
+} Carta;
+
+// Estructura para representar la información de un jugador
+typedef struct {
+    int id;
+    Carta mano[CARTAS_POR_JUGADOR]; // Por ahora, array fijo
+    int cartasEnMano;
+    int puntaje;
+    bool haPasado;
+} Jugador;
+
+// Función para crear la baraja
+void crearBaraja(Carta* baraja) {
+    Carta* cartaptr = baraja;
+    for (int p = 0; p < NUM_PALOS_REGULARES; ++p) {
+        for (int v = 0; v < NUM_VALORES_REGULARES; ++v) {
+            cartaptr->palo = static_cast<Palo>(p);
+            cartaptr->valor = static_cast<Valor>(v);
+            cartaptr++;
+        }
+    }
+    for (int i = 0; i < NUM_JOKERS; ++i) {
+        cartaptr->palo = Palo::JOKER;
+        cartaptr->valor = Valor::JOKER;
+        cartaptr++;
+    }
+}
+
+// Función para barajar la baraja
+void barajarBaraja(Carta* baraja, int numCartas) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distribucion(0, numCartas - 1);
+
+    for (int i = numCartas - 1; i > 0; --i) {
+        int j = distribucion(gen);
+        std::swap(baraja[i], baraja[j]);
+    }
+}
+
+// Función para repartir las cartas
+void repartirCartas(Carta* baraja, Jugador jugadores[NUM_JUGADORES]) {
+    int cartaIndex = 0;
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        jugadores[i].id = i + 1;
+        jugadores[i].cartasEnMano = CARTAS_POR_JUGADOR;
+        jugadores[i].puntaje = 0;
+        jugadores[i].haPasado = false;
+        for (int j = 0; j < CARTAS_POR_JUGADOR; ++j) {
+            jugadores[i].mano[j] = baraja[cartaIndex++];
+        }
+    }
+    // Manejar las cartas restantes si NUM_CARTAS no es divisible por NUM_JUGADORES
+    for (int i = 0; cartaIndex < NUM_CARTAS; ++i) {
+        jugadores[i % NUM_JUGADORES].mano[jugadores[i % NUM_JUGADORES].cartasEnMano++] = baraja[cartaIndex++];
+    }
+}
+
+// Función para imprimir una carta
+void imprimirCarta(Carta carta) {
+    if (carta.palo == Palo::JOKER) {
+        std::cout << valores_str[static_cast<int>(carta.valor)];
+    } else {
+        std::cout << valores_str[static_cast<int>(carta.valor)] << " de " << palos_str[static_cast<int>(carta.palo)];
+    }
+}
+
+// Función para imprimir la mano de un jugador
+void imprimirMano(Jugador jugador) {
+    std::cout << "Mano del Jugador " << jugador.id << ": ";
+    for (int i = 0; i < jugador.cartasEnMano; ++i) {
+        imprimirCarta(jugador.mano[i]);
+        if (i < jugador.cartasEnMano - 1) {
+            std::cout << ", ";
+        }
+    }
+    std::cout << std::endl;
+}
+
+int main() {
+    Carta baraja[NUM_CARTAS];
+    Jugador jugadores[NUM_JUGADORES];
+
+    crearBaraja(baraja);
+    barajarBaraja(baraja, NUM_CARTAS);
+    repartirCartas(baraja, jugadores);
+
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        imprimirMano(jugadores[i]);
+    }
+
+    return 0;
+}
+
+//Función para Encontrar al Jugador con el 3 de Diamantes (Inicio de la Primera Ronda)
+
+int encontrarJugadorInicial(Jugador jugadores[NUM_JUGADORES]) {
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        for (int j = 0; j < jugadores[i].cartasEnMano; ++j) {
+            if (jugadores[i].mano[j].valor == Valor::TRES && jugadores[i].mano[j].palo == Palo::DIAMANTES) {
+                return i; // Devuelve el índice del jugador
+            }
+        }
+    }
+    return -1; // Si no se encuentra (esto no debería pasar con una baraja estándar)
+}
+
+//Esquema General de la Lógica por Rondas:
+
+void jugarRonda(Jugador jugadores[NUM_JUGADORES]) {
+    int jugadorActual = -1;
+    std::vector<Carta> cartasEnMesa; // Para almacenar las cartas jugadas en la baza actual
+    int pasesConsecutivos = 0;
+    int jugadoresSinCartas = 0;
+    bool rondaTerminada = false;
+
+    // Determinar el jugador inicial para la primera ronda
+    // Para rondas posteriores, el jugador inicial será el Mendigo
+    if (/* Es la primera ronda */ true) {
+        jugadorActual = encontrarJugadorInicial(jugadores);
+    } else {
+        // Lógica para encontrar al Mendigo de la ronda anterior
+    }
+
+    while (!rondaTerminada) {
+        std::cout << "\nTurno del Jugador " << jugadores[jugadorActual].id << std::endl;
+        imprimirMano(jugadores[jugadorActual]);
+
+        // El jugador actual realiza una jugada o pasa
+        // ... (Aquí irá la lógica para que el jugador elija cartas para jugar o pasar) ...
+
+        // Después de la jugada o el pase, se actualiza el estado del juego
+        // ... (Verificar si la jugada es válida, añadir cartas a la mesa, contar pases, verificar si alguien se quedó sin cartas) ...
+
+        // Pasar al siguiente jugador
+        jugadorActual = (jugadorActual + 1) % NUM_JUGADORES;
+
+        // Verificar si la ronda ha terminado
+        // ... (Si 3 jugadores se quedaron sin cartas) ...
+    }
+
+    // Asignar puntos y rangos al final de la ronda
+    // ...
+
+    //Implementación de las Reglas Especiales (Se irán añadiendo dentro de la lógica de jugarRonda):
+
+    // Dentro de la lógica donde un jugador intenta jugar cartas:
+// ...
+// Verificar la validez de la jugada (cantidad de cartas, valor mayor, etc.)
+// ...
+
+// Aplicar reglas especiales si la jugada es válida
+if (/* La jugada involucra un 8 */ false) {
+    // Lógica para "8 Stop"
+    std::cout << "¡Ocho Stop! La mesa se limpia." << std::endl;
+    cartasEnMesa.clear();
+    // El jugador que jugó el 8 tiene el siguiente turno
+}
+
+if (/* Se jugó un Joker solitario y otro jugador tiene el 3 de picas */ false) {
+    // Lógica para la Reversión del 3 de Picas
+    std::cout << "¡El 3 de Picas le gana al Joker!" << std::endl;
+    // ...
+}
+
+if (/* Se jugó un póker */ false) {
+    // Lógica para la Revolución
+    std::cout << "¡Revolución!" << std::endl;
+    bool revolucionActiva = true;
+    // ...
+}
+
+// Si se jugó un Joker combinado, su valor se adapta
+// ...
+
+//Implementación de la Lógica entre Rondas:
+
+void prepararNuevaRonda(Jugador jugadores[NUM_JUGADORES], int rondaActual) {
+    // 1. Se reparten las cartas de la misma forma que para la primera ronda
+    Carta baraja[NUM_CARTAS];
+    crearBaraja(baraja);
+    barajarBaraja(baraja, NUM_CARTAS);
+    repartirCartas(baraja, jugadores);
+
+    if (rondaActual > 1) {
+        // 2. Intercambios basados en los rangos de la ronda anterior
+        int magnateIndex = -1, ricoIndex = -1, pobreIndex = -1, mendigoIndex = -1;
+        for (int i = 0; i < NUM_JUGADORES; ++i) {
+            if (jugadores[i].rango == "Magnate") magnateIndex = i;
+            else if (jugadores[i].rango == "Rico") ricoIndex = i;
+            else if (jugadores[i].rango == "Pobre") pobreIndex = i;
+            else if (jugadores[i].rango == "Mendigo") mendigoIndex = i;
+        }
+
+        if (magnateIndex != -1 && mendigoIndex != -1) {
+            // El Magnate intercambia 2 cartas con el Mendigo
+            // ... (Lógica para que el Magnate elija 2 cartas y el Mendigo entregue sus 2 más altas) ...
+            std::cout << "Intercambio entre Magnate (Jugador " << jugadores[magnateIndex].id
+                      << ") y Mendigo (Jugador " << jugadores[mendigoIndex].id << ")" << std::endl;
+        }
+
+        if (ricoIndex != -1 && pobreIndex != -1) {
+            // El Rico intercambia 1 carta con el Pobre
+            // ... (Lógica para que el Rico elija 1 carta y el Pobre entregue su más alta) ...
+            std::cout << "Intercambio entre Rico (Jugador " << jugadores[ricoIndex].id
+                      << ") y Pobre (Jugador " << jugadores[pobreIndex].id << ")" << std::endl;
+        }
+
+        // 4. La ronda la comienza el Mendigo
+        if (mendigoIndex != -1) {
+            // La variable jugadorActual en jugarRonda se inicializará con mendigoIndex
+        }
+    }
+}
+
+//Implementación de la Gestión de la Partida:
+
+void jugarPartida() {
+    Jugador jugadores[NUM_JUGADORES];
+
+    // Inicializar jugadores
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        jugadores[i].id = i + 1;
+        jugadores[i].puntaje = 0;
+        jugadores[i].rango = "";
+    }
+
+    for (int ronda = 1; ronda <= NUM_RONDAS; ++ronda) {
+        std::cout << "\n--- Ronda " << ronda << " ---" << std::endl;
+        prepararNuevaRonda(jugadores, ronda);
+        jugarRonda(jugadores); // Aquí se desarrollará la lógica principal de la ronda
+        // ... (Lógica para actualizar los puntajes y rangos después de cada ronda) ...
+    }
+
+    // Determinar el ganador al final de la partida
+    int ganador = 0;
+    int maxPuntos = -1;
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        std::cout << "Jugador " << jugadores[i].id << " - Puntos: " << jugadores[i].puntaje << std::endl;
+        if (jugadores[i].puntaje > maxPuntos) {
+            maxPuntos = jugadores[i].puntaje;
+            ganador = jugadores[i].id;
+        }
+    }
+
+    std::cout << "\n¡El Jugador " << ganador << " es el ganador de la partida con " << maxPuntos << " puntos!" << std::endl;
+}
+
+int main() {
+    jugarPartida();
+    return 0;
+}
+
