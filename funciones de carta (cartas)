@@ -1,0 +1,55 @@
+// funcionamento cartas balatro
+#include <iostream>
+#include <random>
+
+void barajarBaraja(Carta* baraja, int numCartas) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> distribucion(0, numCartas - 1);
+
+    for (int i = numCartas - 1; i > 0; --i) {
+        int j = distribucion(gen);
+        // Intercambiar baraja[i] y baraja[j] sin std::swap
+        Carta temp = baraja[i];
+        baraja[i] = baraja[j];
+        baraja[j] = temp;
+    }
+}
+
+// Función auxiliar para obtener una carta de la mano por índice (temporal)
+
+Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
+    NodoCarta* actual = jugador.mano.cabeza;
+    for (int i = 0; i < indice; ++i) {
+        if (actual == nullptr || actual->siguiente == nullptr) {
+            return nullptr; // Índice fuera de rango
+        }
+        actual = actual->siguiente;
+    }
+    if (actual != nullptr) {
+        return &(actual->data);
+    }
+    return nullptr;
+}
+
+// Función auxiliar para eliminar un nodo por índice de la lista enlazada
+
+bool eliminarCartaPorIndice(Mano& mano, int indice) {
+    if (indice < 0 || indice >= mano.cantidadCartas()) {
+        return false; // Índice fuera de rango
+    }
+    NodoCarta* actual = mano.cabeza;
+    NodoCarta* previo = nullptr;
+    for (int i = 0; i < indice; ++i) {
+        prev = actual;
+        actual = actual->siguiente;
+    }
+    if (prev == nullptr) {
+        mano.cabeza = actual->siguiente;
+    } else {
+        prev->siguiente = actual->siguiente;
+    }
+    delete actual;
+    mano.numCartas--;
+    return true;
+}
