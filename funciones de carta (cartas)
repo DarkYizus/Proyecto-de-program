@@ -8,14 +8,14 @@ void barajarBaraja(Carta* baraja, int numCartas) {
 
     for (int i = numCartas - 1; i > 0; --i) {
         int j = distribucion(gen);
-        // Intercambiar baraja[i] y baraja[j] sin std::swap
+        //Intercambiar baraja[i] y baraja[j] 
         Carta temp = baraja[i];
         baraja[i] = baraja[j];
         baraja[j] = temp;
     }
 }
 
-//  cartas por indice (temporal)
+//cartas por indice (temporal)
 
 Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
     NodoCarta* actual = jugador.mano.cabeza;
@@ -31,7 +31,7 @@ Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
     return nullptr;
 }
 
-// para eliminar un nodo por índice de la lista enlazada
+//para eliminar un nodo por índice de la lista enlazada
 
 bool eliminarCartaPorIndice(Mano& mano, int indice) {
     if (indice < 0 || indice >= mano.cantidadCartas()) {
