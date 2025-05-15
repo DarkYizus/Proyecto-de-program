@@ -52,3 +52,38 @@ bool eliminarCartaPorIndice(Mano& mano, int indice) {
     mano.numCartas--;
     return true;
 }
+
+void jugarRonda(Jugador jugadores[NUM_JUGADORES]) {
+    int jugadorActual = -1;
+    std::vector<Carta> cartasEnMesa; // Para almacenar las cartas del jugador
+    int pasesConsecutivos = 0;
+    int jugadoresSinCartas = 0;
+    bool rondaTerminada = false;
+    bool primeraRonda = true; //nota1
+
+ if (primeraRonda) {
+        jugadorActual = encontrarJugadorInicial(jugadores);
+        primeraRonda = false; // Desactivar interaccion
+    } else {
+        // Lógica para encontrar al Mendigo de la ronda anterior (a implementar)
+        jugadorActual = 0; // Temporalmente inicia el jugador 0
+    }
+
+    while (!rondaTerminada) {
+        std::cout << "\nTurno del Jugador " << jugadores[jugadorActual].id << std::endl;
+        std::cout << "Mano del Jugador " << jugadores[jugadorActual].id << ": ";
+        NodoCarta* temp = jugadores[jugadorActual].mano.cabeza;
+        int indice = 0;
+        std::vector<NodoCarta*> nodosMano; // Almacenar los nodos 
+        while (temp != nullptr) {
+            std::cout << "[" << indice << "] ";
+            imprimirCarta(temp->data);
+            nodosMano.push_back(temp);
+            if (temp->siguiente != nullptr) {
+                std::cout << ", ";
+            }
+            temp = temp->siguiente;
+            indice++;
+        }
+        std::cout << std::endl;
+
