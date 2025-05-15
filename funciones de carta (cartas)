@@ -1,4 +1,4 @@
-// funcionamento cartas balatro (jesus es gay)
+// cartas balatro (jesus es gay)
 #include <iostream>
 #include <random>
 
@@ -16,7 +16,7 @@ void barajarBaraja(Carta* baraja, int numCartas) {
     }
 }
 
-// Función auxiliar para obtener una carta de la mano por índice (temporal)
+//  cartas por indice (temporal)
 
 Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
     NodoCarta* actual = jugador.mano.cabeza;
@@ -32,7 +32,7 @@ Carta* obtenerCartaPorIndice(Jugador& jugador, int indice) {
     return nullptr;
 }
 
-// Función auxiliar para eliminar un nodo por índice de la lista enlazada
+// para eliminar un nodo por índice de la lista enlazada
 
 bool eliminarCartaPorIndice(Mano& mano, int indice) {
     if (indice < 0 || indice >= mano.cantidadCartas()) {
