@@ -63,7 +63,7 @@ for (int p=0;p<NUM_PALOS_REGULARES;++p){
     }
 }
 
-for (int i=0;i<NUM_JOKERERS;++i){
+for (int i=0;i<NUM_JOKERS;++i){
     cartaptr->palo=PALO_JOKER;
     cartaptr->valor=VALOR_JOKER;
     cartaptr++;
