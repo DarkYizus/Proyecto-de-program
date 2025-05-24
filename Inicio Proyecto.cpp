@@ -64,11 +64,20 @@ void crearBaraja(Carta* baraja) {
     }
     
 // Jokers
-for (int i=0;i<NUM_JOKERERS;++i){
-    cartaptr->palo=PALO_JOKER;
-    cartaptr->valor=VALOR_JOKER;
-    cartaptr++;
+for (int i=0;i<NUM_JOKERS;++i){
+    cartaPtr->palo=PALO_JOKER;
+    cartaPtr->valor=VALOR_JOKER;
+    cartaPtr++;
 }
+}
+
+// Función para imprimir una carta
+void imprimirCarta(const Carta& carta) {
+    if (carta.palo == PALO_JOKER) {
+        std::cout << "JOKER";
+    } else {
+        std::cout << valores_str[carta.valor] << " de " << palos_str[carta.palo];
+    }
 }
 
 // --- Función para barajar las cartas (con <random>) ---
@@ -112,3 +121,4 @@ void repartirCartas(Carta* baraja, Jugador* jugadores, int numJugadores, int car
         }
     }
 }
+
