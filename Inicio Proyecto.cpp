@@ -51,21 +51,64 @@ typedef struct {
 } Jugador;
 
 
-// funcion crear baraja
-
-void crearbaraja (Carta*baraja) {
-Carta*cartaptr=baraja;
-for (int p=0;p<NUM_PALOS_REGULARES;++p){
-    for (int v=0;p<NUM_VALORES_REGULARES;++v){
-    cartaptr->palo=p;
-    cartaptr->valor= v;
-    cartaptr++;
+// Función para crear la baraja
+void crearBaraja(Carta* baraja) {
+    Carta* cartaPtr = baraja;
+    // Cartas regulares
+    for (int p = 0; p < NUM_PALOS_REGULARES; ++p) {
+        for (int v = 0; v < NUM_VALORES_REGULARES; ++v) { // Corregido: v < NUM_VALORES_REGULARES
+            cartaPtr->palo = p;
+            cartaPtr->valor = v;
+            cartaPtr++;
+        }
     }
-}
-
+    
+// Jokers
 for (int i=0;i<NUM_JOKERERS;++i){
     cartaptr->palo=PALO_JOKER;
     cartaptr->valor=VALOR_JOKER;
     cartaptr++;
 }
+}
+
+// --- Función para barajar las cartas (con <random>) ---
+// Se declara el generador y la distribución como 'static'
+// para que se inicialicen una sola vez y mantengan su estado.
+// sino podriamos pasarlos como parámetros.
+static std::random_device rd; // Fuente  para la semilla
+static std::mt19937 generador(rd()); // Generador de números aleatorios de Mersenne Twister
+
+void barajar(Carta* baraja, int numCartas) {
+    // Usamos el generador y la distribución para obtener un índice aleatorio
+    for (int i = numCartas - 1; i > 0; --i) {
+        // La distribución se creará en cada iteración
+        std::uniform_int_distribution<> dis(0, i);
+        int j = dis(generador); // Obtiene un número aleatorio entre 0 e i
+
+        // Intercambiar baraja[i] con baraja[j]
+        Carta temp = baraja[i];
+        baraja[i] = baraja[j];
+        baraja[j] = temp;
+    }
+}
+
+// --- Función para repartir cartas ---
+void repartirCartas(Carta* baraja, Jugador* jugadores, int numJugadores, int cartasPorJugador) {
+    int indiceCartaActual = 0; // Índice para saber qué carta de la baraja vamos a repartir
+
+    // Iterar para repartir cada ronda de cartas
+    for (int i = 0; i < cartasPorJugador; ++i) {
+        // Iterar por cada jugador para darle una carta
+        for (int j = 0; j < numJugadores; ++j) {
+            if (indiceCartaActual < NUM_CARTAS) { // Asegurarse de que quedan cartas en la baraja
+                // Añadir la carta a la mano del jugador
+                jugadores[j].mano[jugadores[j].cartasEnMano] = baraja[indiceCartaActual];
+                jugadores[j].cartasEnMano++; // Incrementar el contador de cartas en la mano
+                indiceCartaActual++; // Moverse a la siguiente carta de la baraja
+            } else {
+                std::cout << "¡Advertencia: No hay suficientes cartas para repartir a todos los jugadores!" << std::endl;
+                return; // Salir si no quedan cartas, solo por llenar el else, estamos en Venezuela, hay que simular escaces
+            }
+        }
+    }
 }
