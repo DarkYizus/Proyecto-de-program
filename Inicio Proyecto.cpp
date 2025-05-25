@@ -122,3 +122,19 @@ void repartirCartas(Carta* baraja, Jugador* jugadores, int numJugadores, int car
     }
 }
 
+//el primero que empieza tiene q tener el 3 de diamantes 
+int encontrarPrimerJugador(Jugador* jugadores_ptr) { 
+    Jugador* actualJugador_ptr = jugadores_ptr; 
+    for (int i = 0; i < NUM_JUGADORES; ++i) {
+        Carta* cartaEnMano_ptr = actualJugador_ptr->mano; 
+
+        for (int j = 0; j < actualJugador_ptr->cartasEnMano; ++j) {
+            if (cartaEnMano_ptr->palo == PALO_DIAMANTES && cartaEnMano_ptr->valor == VALOR_3) {
+                return (int)(actualJugador_ptr - jugadores_ptr); 
+            }
+            cartaEnMano_ptr++; 
+        }
+        actualJugador_ptr++; 
+    return -1; 
+}
+}
