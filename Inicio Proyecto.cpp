@@ -123,7 +123,7 @@ void repartirCartas(Carta* baraja, Jugador* jugadores, int numJugadores, int car
 }
 
 //el primero que empieza tiene q tener el 3 de diamantes 
-int encontrarPrimerJugador(Jugador* jugadores_ptr) { 
+int PrimerJugador(Jugador* jugadores_ptr) { 
     Jugador* actualJugador_ptr = jugadores_ptr; 
     for (int i = 0; i < NUM_JUGADORES; ++i) {
         Carta* cartaEnMano_ptr = actualJugador_ptr->mano; 
@@ -140,7 +140,7 @@ int encontrarPrimerJugador(Jugador* jugadores_ptr) {
 }
 
 // cuando se muestre la mano de los jugadores ordenado por metodo burbuja
-void ordenarCartas(Jugador* jugador) {
+void ordenarcartasburbuja(Jugador* jugador) {
     for (int i = 0; i < jugador->cartasEnMano - 1; ++i) {
         for (int j = 0; j < jugador->cartasEnMano - i - 1; ++j) {
             if (jugador->mano[j].valor > jugador->mano[j + 1].valor ||
