@@ -154,9 +154,23 @@ void ordenarcartasburbuja(Jugador* jugador) {
     }
 }
 
-        
+bool cartasigaules(const Carta* cartas, int cantidad) {
+    if (cantidad <= 0) return false;
+
+    for (int i = 1; i < cantidad; ++i) {
+        if (cartas[i].valor != cartas[0].valor) {
+            return false;
+        }
+    }
+    return true;
+}
              
-    // Iniciar el juego por rondas
+  
+
+
+
+
+// Iniciar el juego por rondas
     for (int ronda = 0; ronda < NUM_RONDAS; ++ronda) {
         std::cout << "\n===== Ronda " << ronda + 1 << " =====" << std::endl;
         
