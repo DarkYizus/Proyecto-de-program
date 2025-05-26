@@ -138,3 +138,18 @@ int encontrarPrimerJugador(Jugador* jugadores_ptr) {
     return -1; 
 }
 }
+
+// cuando se muestre la mano de los jugadores ordenado por metodo burbuja
+void ordenarCartas(Jugador* jugador) {
+    for (int i = 0; i < jugador->cartasEnMano - 1; ++i) {
+        for (int j = 0; j < jugador->cartasEnMano - i - 1; ++j) {
+            if (jugador->mano[j].valor > jugador->mano[j + 1].valor ||
+                (jugador->mano[j].valor == jugador->mano[j + 1].valor && 
+                 jugador->mano[j].palo > jugador->mano[j + 1].palo)) {
+                Carta temp = jugador->mano[j];
+                jugador->mano[j] = jugador->mano[j + 1];
+                jugador->mano[j + 1] = temp;
+            }
+        }
+    }
+}
