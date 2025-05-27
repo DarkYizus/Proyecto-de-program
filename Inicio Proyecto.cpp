@@ -334,7 +334,7 @@ void jugarRonda(Jugador* jugadores, int numJugadores, int cartasPorJugador, int 
     // int ordenSalida[NUM_JUGADORES]; // Ahora se recibe como parámetro
     int indiceOrdenSalida = 0;
 
-    std::cout << "\nDEBUG: El Jugador " << jugadores[primerJugadorIndex].id << " inicia la ronda." << std::endl;
+    std::cout << "\nBALATRO BALATREZ: El Jugador " << jugadores[primerJugadorIndex].id << " inicia la ronda." << std::endl;
     g_enRevolucion = false; // Resetear revolución al inicio de cada ronda.
 
     while (jugadoresFuera < (NUM_JUGADORES - 1)) { // La ronda termina cuando 3 jugadores se quedan sin cartas
