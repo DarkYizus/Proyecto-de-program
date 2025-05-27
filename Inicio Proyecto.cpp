@@ -322,6 +322,61 @@ void limpiarBufferEntrada() {
     std::cin.ignore(9999, '\n');
 }
 
+void intercambiarCartas(Jugador* jugador1, Jugador* jugador2, int cantidad) {
+    if (jugador1 == nullptr || jugador2 == nullptr || cantidad <= 0) {
+        std::cout << "Error: Intentando intercambiar cartas con jugadores o cantidad inválida." << std::endl;
+        return;
+    }
+
+    std::cout << "\nIntercambio de cartas entre Jugador " << jugador1->id << " y Jugador " << jugador2->id << " (" << cantidad << " cartas cada uno)." << std::endl;
+
+    ordenarcartasburbuja(jugador1->mano, jugador1->cartasEnMano);
+    ordenarcartasburbuja(jugador2->mano, jugador2->cartasEnMano);
+
+    Carta cartasDeJugador1[CARTAS_POR_JUGADOR];
+    Carta cartasDeJugador2[CARTAS_POR_JUGADOR];
+
+    for (int i = 0; i < cantidad; ++i) {
+        if (i < jugador1->cartasEnMano) {
+            cartasDeJugador1[i] = jugador1->mano[i];
+        } else {
+            std::cout << "Advertencia: El Jugador " << jugador1->id << " no tiene suficientes cartas para dar." << std::endl;
+            return;
+        }
+        if (i < jugador2->cartasEnMano) {
+            cartasDeJugador2[i] = jugador2->mano[i];
+        } else {
+            std::cout << "Advertencia: El Jugador " << jugador2->id << " no tiene suficientes cartas para dar." << std::endl;
+            return;
+        }
+    }
+
+    std::cout << "Jugador " << jugador1->id << " da: ";
+    for (int i = 0; i < cantidad; ++i) {
+        imprimirCarta(cartasDeJugador1[i]);
+        std::cout << (i == cantidad - 1 ? "" : ", ");
+    }
+    std::cout << std::endl;
+
+    std::cout << "Jugador " << jugador2->id << " da: ";
+    for (int i = 0; i < cantidad; ++i) {
+        imprimirCarta(cartasDeJugador2[i]);
+        std::cout << (i == cantidad - 1 ? "" : ", ");
+    }
+    std::cout << std::endl;
+
+    eliminarCartasDeMano(jugador1, cartasDeJugador1, cantidad);
+    eliminarCartasDeMano(jugador2, cartasDeJugador2, cantidad);
+
+    for (int i = 0; i < cantidad; ++i) {
+        jugador1->mano[jugador1->cartasEnMano++] = cartasDeJugador2[i];
+        jugador2->mano[jugador2->cartasEnMano++] = cartasDeJugador1[i];
+    }
+
+    ordenarcartasburbuja(jugador1->mano, jugador1->cartasEnMano);
+    ordenarcartasburbuja(jugador2->mano, jugador2->cartasEnMano);
+}
+
 // Función para simular una ronda de juego
 void jugarRonda(Jugador* jugadores, int numJugadores, int cartasPorJugador, int primerJugadorIndex, int ordenSalida[]) {
     int pasesConsecutivos = 0;
