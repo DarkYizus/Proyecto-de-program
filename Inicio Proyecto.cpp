@@ -609,9 +609,8 @@ void jugarRonda(Jugador* jugadores, int numJugadores, int cartasPorJugador, int 
 int main() {
     Carta baraja[NUM_CARTAS];
     Jugador jugadores[NUM_JUGADORES];
-    int ordenSalidaRonda[NUM_JUGADORES]; // Para almacenar el orden de salida de cada ronda
+    int ordenSalidaRonda[NUM_JUGADORES];
 
-    // Inicializar jugadores (puntajes, etc.)
     for (int i = 0; i < NUM_JUGADORES; ++i) {
         jugadores[i].id = i + 1;
         jugadores[i].cartasEnMano = 0;
@@ -619,48 +618,59 @@ int main() {
         jugadores[i].haPasado = false;
     }
 
-    // Variables para almacenar los rangos de la ronda anterior (para intercambios y inicio de ronda)
     int magnateRondaAnteriorID = -1;
     int ricoRondaAnteriorID = -1;
     int pobreRondaAnteriorID = -1;
-    int mendigoRondaAnteriorID = -1; // Quién empieza la siguiente ronda
+    int mendigoRondaAnteriorID = -1;
 
     for (int ronda = 0; ronda < NUM_RONDAS; ++ronda) {
         std::cout << "\n===== Ronda " << ronda + 1 << " =====" << std::endl;
 
-        // Resetear manos y estado de "pasado" de jugadores para la nueva ronda
         for (int i = 0; i < NUM_JUGADORES; ++i) {
             jugadores[i].cartasEnMano = 0;
-            jugadores[i].haPasado = false; // Importante resetear esto
+            jugadores[i].haPasado = false;
         }
 
-        // Crear, barajar y repartir cartas
         crearBaraja(baraja);
         barajar(baraja, NUM_CARTAS);
         repartirCartas(baraja, jugadores, NUM_JUGADORES, CARTAS_POR_JUGADOR);
 
-        // --- Preparación de la ronda (intercambio de cartas) ---
-        if (ronda > 0) { // A partir de la segunda ronda
+        if (ronda > 0) {
             std::cout << "\n--- Preparación de la ronda (Intercambio de Cartas) ---" << std::endl;
-            // Aquí iría la lógica para buscar los jugadores por sus IDs de la ronda anterior
-            // y realizar el intercambio de cartas.
-            std::cout << "Lógica de intercambio de cartas pendiente de implementación." << std::endl;
-            // Ejemplo:
-            // Jugador* magnatePtr = nullptr; // Buscar jugador por ID
-            // ...
-            // magnatePtr->mano[idx1] = cartaDelMendigo;
+
+            Jugador* magnatePtr = nullptr;
+            Jugador* ricoPtr = nullptr;
+            Jugador* pobrePtr = nullptr;
+            Jugador* mendigoPtr = nullptr;
+
+            for (int i = 0; i < NUM_JUGADORES; ++i) {
+                if (jugadores[i].id == magnateRondaAnteriorID) magnatePtr = &jugadores[i];
+                if (jugadores[i].id == ricoRondaAnteriorID) ricoPtr = &jugadores[i];
+                if (jugadores[i].id == pobreRondaAnteriorID) pobrePtr = &jugadores[i];
+                if (jugadores[i].id == mendigoRondaAnteriorID) mendigoPtr = &jugadores[i];
+            }
+
+            if (magnatePtr && mendigoPtr) {
+                intercambiarCartas(magnatePtr, mendigoPtr, 2);
+            } else {
+                std::cout << "Advertencia: No se pudo encontrar Magnate o Mendigo para el intercambio." << std::endl;
+            }
+
+            if (ricoPtr && pobrePtr) {
+                intercambiarCartas(ricoPtr, pobrePtr, 1);
+            } else {
+                std::cout << "Advertencia: No se pudo encontrar Rico o Pobre para el intercambio." << std::endl;
+            }
         }
 
-        // Determinar el primer jugador de la ronda
         int primerJugadorIndex;
-        if (ronda == 0) { // Primera ronda: el que tiene el 3 de diamantes
+        if (ronda == 0) {
             primerJugadorIndex = PrimerJugador(jugadores);
             if (primerJugadorIndex == -1) {
                 std::cout << "Error: 3 de diamantes no encontrado. Iniciando con Jugador 1." << std::endl;
-                primerJugadorIndex = 0; // Fallback
+                primerJugadorIndex = 0;
             }
-        } else { // Rondas siguientes: el Mendigo de la ronda anterior
-            // Necesitamos encontrar el índice del jugador que fue el mendigo de la ronda anterior
+        } else {
             int foundMendigoIndex = -1;
             for(int i = 0; i < NUM_JUGADORES; ++i) {
                 if (jugadores[i].id == mendigoRondaAnteriorID) {
@@ -672,35 +682,32 @@ int main() {
                 primerJugadorIndex = foundMendigoIndex;
                 std::cout << "El Mendigo de la ronda anterior (Jugador " << mendigoRondaAnteriorID << ") inicia la ronda." << std::endl;
             } else {
-                // Esto debería pasar si no se pudo determinar el mendigo anterior (solo en la primera ronda)
-                // o si hay un error
                 primerJugadorIndex = 0;
                 std::cout << "No se encontró el Mendigo de la ronda anterior. Iniciando con Jugador 1." << std::endl;
             }
         }
 
-        // Mostrar manos iniciales de la ronda (después de repartir y posibles intercambios)
         for (int i = 0; i < NUM_JUGADORES; ++i) {
             std::cout << "\n--- Mano inicial del Jugador " << jugadores[i].id << " ("
                       << jugadores[i].cartasEnMano << " cartas) ---" << std::endl;
-            ordenarcartasburbuja(jugadores[i].mano, jugadores[i].cartasEnMano); // Ordenar antes de mostrar
+            ordenarcartasburbuja(jugadores[i].mano, jugadores[i].cartasEnMano);
             for (int j = 0; j < jugadores[i].cartasEnMano; ++j) {
-                std::cout << "[" << j << "] "; // Mostrar índice para que el jugador elija
+                std::cout << "[" << j << "] ";
                 imprimirCarta(jugadores[i].mano[j]);
                 std::cout << std::endl;
             }
         }
 
-        // Jugar la ronda, pasando el array para el orden de salida
         jugarRonda(jugadores, NUM_JUGADORES, CARTAS_POR_JUGADOR, primerJugadorIndex, ordenSalidaRonda);
 
-        // --- Actualizar los rangos para la próxima ronda ---
-        // El mendigo es el único jugador que queda con cartas.
+        magnateRondaAnteriorID = ordenSalidaRonda[0];
+        ricoRondaAnteriorID = ordenSalidaRonda[1];
+        pobreRondaAnteriorID = ordenSalidaRonda[2];
+
         int mendigoDeEstaRonda = -1;
         for (int i = 0; i < NUM_JUGADORES; ++i) {
-            // Un jugador es el mendigo si no está en el ordenSalidaRonda
             bool encontradoEnOrdenSalida = false;
-            for (int k = 0; k < (NUM_JUGADORES -1); ++k) { // ordenSalidaRonda solo tiene 3 jugadores
+            for (int k = 0; k < (NUM_JUGADORES -1); ++k) {
                 if (jugadores[i].id == ordenSalidaRonda[k]) {
                     encontradoEnOrdenSalida = true;
                     break;
@@ -715,13 +722,11 @@ int main() {
         if (mendigoDeEstaRonda != -1) {
             mendigoRondaAnteriorID = mendigoDeEstaRonda;
         } else {
-            // Esto no debería suceder si la lógica de salida es correcta
             std::cout << "ERROR: No se pudo determinar el mendigo de esta ronda." << std::endl;
-            mendigoRondaAnteriorID = -1; // Fallback
+            mendigoRondaAnteriorID = -1;
         }
     }
 
-    // Determinar el ganador final del juego
     std::cout << "\n===== ¡Fin del Juego! =====" << std::endl;
     int ganadorJuegoID = -1;
     int puntajeMax = -1;
@@ -741,8 +746,3 @@ int main() {
 
     return 0;
 }
-
-
-
-
-
